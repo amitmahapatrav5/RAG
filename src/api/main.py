@@ -14,7 +14,7 @@ load_dotenv()
 class AllowedFileTypes(str, Enum):
     markdown = '.md'
 
-def validate_file(file: UploadFile):
+def validate_filetype(file: UploadFile):
     """
     Validates if the uploaded file by user is supported by application or not
     This validation takes only the extension in the file into account to check. => Need some better way
@@ -54,7 +54,7 @@ app = FastAPI()
 
 
 @app.post("/uploadfile/", status_code=status.HTTP_202_ACCEPTED)
-async def upload_file(file: UploadFile = Depends(validate_file)):
+async def upload_file(file: UploadFile = Depends(validate_filetype)):
     if file:
         if not exists(file.filename):
             create_file(file.file, filename=file.filename) # This needs to be async. Client must not wait for upload to happen
