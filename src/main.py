@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, UploadFile, Depends, HTTPException
 from fastapi import status
 
-
 load_dotenv()
 
 
@@ -24,18 +23,6 @@ def validate_filetype(file: UploadFile):
         return file
     return False
 
-def exists(filename: str) -> bool:
-    """
-    Validates if the uploaded file already exists in the data directory
-    This validation happens based on filename => Need some better way
-    If exists, returns True
-    Otherwise, returns False
-    """
-    data_directory_absolute_path = Path(os.environ.get('DATA_DIRECTORY_ABSOLUTE_PATH'))
-
-    if (data_directory_absolute_path / filename).exists():
-        return True
-    return False
 
 def create_file(file, filename: str) -> bool:
     """
@@ -56,27 +43,11 @@ app = FastAPI()
 @app.post("/uploadfile/", status_code=status.HTTP_202_ACCEPTED)
 async def upload_file(file: UploadFile = Depends(validate_filetype)):
     if file:
-        if not exists(file.filename):
-            create_file(file.file, filename=file.filename) # This needs to be async. Client must not wait for upload to happen
-            return {
-                'upload_status': 'success'
-            }
-        else:
-            return HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail='Uploaded File Already Exists'
-            )
+        create_file(file.file, filename=file.filename) # This needs to be async. Client must not wait for upload to happen
+        return {
+            'upload_status': 'success'
+        }
     return HTTPException(
         status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         detail=f'Only supports markdown file, got .{file.filename.split('.')[-1]}'
     )
-
-
-@app.get('/query')
-def query(q:str):
-    pass
-
-
-@app.delete('/reset')
-def reset_vector_db():
-    pass

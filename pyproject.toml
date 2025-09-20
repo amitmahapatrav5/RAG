@@ -1,5 +1,5 @@
 [project]
-name = "rag"
+name = "RAG Content API"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -14,5 +14,7 @@ dependencies = [
     "python-dotenv>=1.1.1",
     "python-multipart>=0.0.20",
     "sentence-transformers>=5.1.0",
+    "sqlalchemy>=2.0.43",
     "unstructured>=0.18.13",
+    "watchdog>=6.0.0",
 ]
